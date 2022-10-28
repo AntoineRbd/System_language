@@ -1,0 +1,9 @@
+name = "exe1"
+description = "Shiny new project"
+version = "0.1.0-dev"
+
+authors = ["Antoine Roubaud"]
+maintainers = ["Antoine Roubaud <antoine.roubaud@epita.fr>"]
+maintainers-logins = ["AntoineRBD"]
+
+executables = ["exe1"]
