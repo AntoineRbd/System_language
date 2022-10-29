@@ -1,42 +1,123 @@
+const LENGTH: usize = 10;
+
 struct Stack {
-    stack: [i32; 0],
+    stack: [i32; LENGTH],
+    index: usize,
 }
 
 impl Stack {
   fn new() -> Self {
-    Stack {stack: []}
-  }
-/*
-  fn length(&self) -> usize {
-    self.stack.len()
-  }
-  */
-
-  fn pop(&mut self) -> i32 {
-    let (self.stack, end)  = pop_right(self.stack);
-    end
+    Stack {
+        stack: [-1; LENGTH],
+        index: 0,
+    }
   }
 
-  fn push(&mut self, n: i32) {
-    self.stack = push_right(self.stack, n);
+  fn pop(self: &mut Stack) -> i32 {
+      if self.index > 0 {
+          let res = self.stack[self.index - 1];
+          self.index -= 1;
+          return res
+      }
+      else {
+          return -1;
+      }
   }
-  /*
 
-  fn is_empty(&self) -> bool {
-    self.stack.is_empty()
+  fn push(self: &mut Stack, n: i32) {
+      if self.index < 10 {
+          self.stack[self.index] = n;
+          self.index += 1;
+      }
   }
 
-  fn peek(&self) -> Option<&T> {
-    self.stack.last()
+  fn peek(self: &mut Stack) -> i32 {
+      if self.index > 0 {
+          return self.stack[self.index - 1];
+      }
+      else {
+          return -1;
+      }
   }
-  */
 }
 
 
 fn main() {
-    let mut vals: Stack = Stack::new();
-    //let vals: [i32; 0] = [];
-    //let stack = Stack { stack: vals};
+    /*
+    let mut stack: Stack = Stack::new();
 
-    println!("OK!");
+    stack.push(12);
+    stack.push(42);
+    stack.push(50);
+
+    stack.print();
+
+    let i = stack.pop();
+    println!("Item remove = {}", i);
+    stack.print();
+    */
+}
+
+#[test]
+fn stack_push_test() {
+    let mut stack: Stack = Stack::new();
+
+    stack.push(12);
+    assert_eq!(stack.stack[0], 12);
+
+    stack.push(42);
+    stack.push(2);
+    assert_eq!(stack.stack[1], 42);
+    assert_eq!(stack.stack[2], 2);
+}
+
+#[test]
+fn stack_push_limit_test() {
+    let mut stack: Stack = Stack::new();
+
+    for _i in 0..10 {
+        stack.push(10);
+    }
+
+    stack.push(42);
+    assert_eq!(stack.stack[9], 10);
+}
+
+#[test]
+fn stack_pop_test() {
+    let mut stack: Stack = Stack::new();
+
+    stack.push(10);
+    stack.push(11);
+    stack.push(12);
+
+    assert_eq!(stack.pop(), 12);
+    assert_eq!(stack.pop(), 11);
+}
+
+#[test]
+fn stack_pop_limit_test() {
+    let mut stack: Stack = Stack::new();
+
+    stack.push(10);
+
+    assert_eq!(stack.pop(), 10);
+    assert_eq!(stack.pop(), -1);
+}
+
+#[test]
+fn stack_peek_test() {
+    let mut stack: Stack = Stack::new();
+
+    stack.push(12);
+
+    assert_eq!(stack.peek(), 12);
+    assert_eq!(stack.peek(), 12);
+}
+
+#[test]
+fn stack_peek_limit_test() {
+    let mut stack: Stack = Stack::new();
+
+    assert_eq!(stack.peek(), -1);
 }
