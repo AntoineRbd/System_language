@@ -110,6 +110,14 @@ fn test_divide_by_0() {
 fn test_if_expr_true() {
     let l1 = Expr::Literal(10);
 
-    let test = Expr::IfExpr{cond: Box::new(l1), true_branch: Box::new(1), false_branch: Box::new(0)};
-    assert_eq!(eval(test), );
+    let test = Expr::IfExpr{cond: Box::new(l1), true_branch: Box::new(Expr::Literal(0)), false_branch: Box::new(Expr::Literal(-1))};
+    assert_eq!(eval(test), 0);
+}
+
+#[test]
+fn test_if_expr_false() {
+    let l1 = Expr::Literal(0);
+
+    let test = Expr::IfExpr{cond: Box::new(l1), true_branch: Box::new(Expr::Literal(0)), false_branch: Box::new(Expr::Literal(-1))};
+    assert_eq!(eval(test), -1);
 }
