@@ -18,7 +18,17 @@ package Expr_Eval is
       end case;
     end record;
 
-    function Eval(E: Expr) return Integer;
-    function BinOp(L: Expr_Eval.Expr_Access; R: Expr_Eval.Expr_Access; Op: Expr_Eval.Op_Kind) return Expr;
+    function Eval(E: Expr) return Eval_Result;
+    function BinOp(L: Integer; R: Integer; Op: Expr_Eval.Op_Kind) return Expr;
     function IfExpr(Cond: Expr_Eval.Expr_Access; Then_Expr: Expr_Eval.Expr_Access; Else_Expr: Expr_Eval.Expr_Access) return Expr;
 end Expr_Eval;
+
+type Eval_Result_Kind is (Bool, Int);
+type Eval_Result (K: Eval_Result_Kind) is record
+    case K is
+        when bool =>
+            Bool_Val: Boolean;
+        when Int => 
+            Int_Val: Integer;
+    end case;
+end record;
