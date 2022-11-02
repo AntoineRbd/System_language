@@ -3,7 +3,12 @@ package body Expr_Eval is
         begin
             case E.Kind is
                 when Bin_Op => return Eval(BinOp(E.L.Val, E.R.Val, E.Op));
-                when If_Expr => return Eval(IfExpr(E.Cond, E.Then_Expr, E.Else_Expr));
+                when If_Expr => 
+                    if Eval(E.Cond.all) /= 0 then
+                        return Eval(E.Then_Expr.all);
+                    else
+                        return Eval(E.Else_Expr.all);
+                    end if;
                 when Literal => return E.Val;
             end case;
             return 0;
@@ -21,16 +26,20 @@ package body Expr_Eval is
                     else
                         return Expr'(Kind => Literal, Val => -1);
                     end if;
-                when Logic_And => return Expr'(Kind => Literal, Val => L and R);
-                when Logic_Or => return Expr'(Kind => Literal, Val => L or R);
+                when Logic_And =>
+                    if L /= 0 and R /= 0 then
+                        return Expr'(Kind => Literal, Val => 1);
+                    else
+                        return Expr'(Kind => Literal, Val => 0);
+                    end if; 
+                when Logic_Or => 
+                    if L /= 0 or R /= 0 then
+                        return Expr'(Kind => Literal, Val => 1);
+                    else
+                        return Expr'(Kind => Literal, Val => 0);
+                    end if; 
             end case;
             return Expr'(Kind => Literal, Val => 0);
         end BinOp;
-
-    function IfExpr(Cond: Expr_Eval.Expr_Access; Then_Expr: Expr_Eval.Expr_Access; Else_Expr: Expr_Eval.Expr_Access) return Expr is
-    begin
-        return Expr'(Kind => Literal, Val => 0);
-    end IfExpr;
-
 end Expr_Eval;
 
