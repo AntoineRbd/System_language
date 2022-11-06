@@ -1,84 +1,59 @@
-with Expr_Eval; use Expr_Eval;
-with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Text_IO;
+use Ada.Text_IO;
 
-procedure Exe1 is
-    Add_test : CONSTANT Expr := (Kind => Bin_Op,
-                 L => new Expr'(Kind => Literal, Val => 12),
-                 R => new Expr'(Kind => Literal, Val => 15),
-                 Op => Add);
-    Sub_test : CONSTANT Expr := (Kind => Bin_Op,
-                 L => new Expr'(Kind => Literal, Val => 12),
-                 R => new Expr'(Kind => Literal, Val => 2),
-                 Op => Sub);
-    Sub_neg_test : CONSTANT Expr := (Kind => Bin_Op,
-                 L => new Expr'(Kind => Literal, Val => 10),
-                 R => new Expr'(Kind => Literal, Val => 15),
-                 Op => Sub);
-    Mul_test : CONSTANT Expr := (Kind => Bin_Op,
-                 L => new Expr'(Kind => Literal, Val => 10),
-                 R => new Expr'(Kind => Literal, Val => 2),
-                 Op => Mul);
-    Mul_0_test : CONSTANT Expr := (Kind => Bin_Op,
-                 L => new Expr'(Kind => Literal, Val => 10),
-                 R => new Expr'(Kind => Literal, Val => 0),
-                 Op => Mul);
-    Div_test : CONSTANT Expr := (Kind => Bin_Op,
-                 L => new Expr'(Kind => Literal, Val => 10),
-                 R => new Expr'(Kind => Literal, Val => 2),
-                 Op => Div);
-    Div_0_test : CONSTANT Expr := (Kind => Bin_Op,
-                 L => new Expr'(Kind => Literal, Val => 10),
-                 R => new Expr'(Kind => Literal, Val => 0),
-                 Op => Div);
-    Logic_And_1_test : CONSTANT Expr := (Kind => Bin_Op,
-                 L => new Expr'(Kind => Literal, Val => 10),
-                 R => new Expr'(Kind => Literal, Val => 12),
-                 Op => Logic_And);
-    Logic_And_0_test : CONSTANT Expr := (Kind => Bin_Op,
-                 L => new Expr'(Kind => Literal, Val => 10),
-                 R => new Expr'(Kind => Literal, Val => 0),
-                 Op => Logic_And);
-    Logic_Or_1_test : CONSTANT Expr := (Kind => Bin_Op,
-                 L => new Expr'(Kind => Literal, Val => 0),
-                 R => new Expr'(Kind => Literal, Val => 12),
-                 Op => Logic_Or);
-    Logic_Or_0_test : CONSTANT Expr := (Kind => Bin_Op,
-                 L => new Expr'(Kind => Literal, Val => 0),
-                 R => new Expr'(Kind => Literal, Val => 0),
-                 Op => Logic_Or);
 
-    If_Expr_then_test : CONSTANT Expr := (Kind => If_Expr,
-                 Cond => new Expr'(Kind => Literal, Val => 1),
-                Then_Expr => new Expr'(Kind => Literal, Val => 1),
-                 Else_Expr => new Expr'(Kind => Literal, Val => 0));
-    If_Expr_else_test : CONSTANT Expr := (Kind => If_Expr,
-                 Cond => new Expr'(Kind => Literal, Val => 0),
-                Then_Expr => new Expr'(Kind => Literal, Val => 1),
-                 Else_Expr => new Expr'(Kind => Literal, Val => 0));
+with Expr_Eval;
+use Expr_Eval;
 
-    procedure test(a: Integer; b: Integer) is
+procedure Exo2 is
+    procedure Unit_Test_Eq_String(S1: String; S2: String) is
     begin
-        if a = b then 
-            put_line("Test Ok");
+        if S1 = S2 then
+            Put_Line("Test Passed...");
         else
-            put_line("Test failed... " & a'Image & " != " & b'Image);
+            Put_Line("/!\ Fail test: '" & S1 & "' is not equal to '" & S2 & "'");
         end if;
-    end test;
+    end Unit_Test_Eq_String;
+
+    procedure Unit_Test_Eq_Int(I1: Integer; I2: Integer) is
+    begin
+        if I1 = I2 then
+            Put_Line("Test Passed...");
+        else
+            Put_Line("/!\ Fail test: " & I1'Image & " is not equal to " & I2'Image);
+        end if;
+    end Unit_Test_Eq_Int;
+
+    procedure Simple_Literal_Test is
+        e: Literal := (val => 12);
+    begin
+        Unit_Test_Eq_Int(Eval(e), 12);
+    end Simple_Literal_Test;
+
+    procedure Simple_Bin_Op_Test is
+        e: Bin_Op := (Op => Add, 
+                        L => new Literal'(val => 1),
+                        R => new Literal'(val => 1));
+    begin
+        Unit_Test_Eq_Int(Eval(e), 2);
+    end Simple_Bin_Op_Test;
+
+    procedure Simple_If_Expr_Test is
+        false_branch: Expr_Access := new Literal'(val => -1);
+        true_branch: Expr_Access := new Literal'(val => 1);
+        cond: Expr_Access := new Literal'(val => 1);
+
+        e: If_Expr := (Cond => cond,
+                   Then_Expr => true_branch,
+                   Else_Expr => false_branch);
+
+    begin
+        Unit_Test_Eq_Int(Eval(e), 1);
+    end Simple_If_Expr_Test;
 
 begin
-    test(Eval(Add_test), 27);
-    test(Eval(Sub_test), 10);
-    test(Eval(Sub_neg_test), -5);
-    test(Eval(Mul_test), 20);
-    test(Eval(Mul_0_test), 0);
-    test(Eval(Div_test), 5);
-    test(Eval(Div_0_test), -1);
+    Simple_Literal_Test;
+    Simple_Bin_Op_Test;
+    Simple_If_Expr_Test;
+end Exo2;
 
-    test(Eval(Logic_And_1_test), 1);
-    test(Eval(Logic_And_0_test), 0);
-    test(Eval(Logic_Or_1_test), 1);
-    test(Eval(Logic_Or_0_test), 0);
-
-    test(Eval(If_Expr_then_test), 1);
-    test(Eval(If_Expr_else_test), 0);
-end Exe1;

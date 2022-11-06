@@ -1,45 +1,29 @@
 package body Expr_Eval is
-    function Eval(E: Expr) return Integer is
-        begin
-            case E.Kind is
-                when Bin_Op => return Eval(BinOp(E.L.Val, E.R.Val, E.Op));
-                when If_Expr => 
-                    if Eval(E.Cond.all) /= 0 then
-                        return Eval(E.Then_Expr.all);
-                    else
-                        return Eval(E.Else_Expr.all);
-                    end if;
-                when Literal => return E.Val;
-            end case;
-            return 0;
-        end Eval;
+    overriding function Eval (L : Literal) return Integer is
+    begin
+        return L.val;
+    end Eval;
 
-    function BinOp(L: Integer; R: Integer; Op: Expr_Eval.Op_Kind) return Expr is
-        begin
-            case Op is
-                when Add => return Expr'(Kind => Literal, Val => L + R);
-                when Sub => return Expr'(Kind => Literal, Val => L - R);
-                when Mul => return Expr'(Kind => Literal, Val => L * R);
-                when Div =>
-                    if r /= 0 then
-                        return Expr'(Kind => Literal, Val => L / R);
-                    else
-                        return Expr'(Kind => Literal, Val => -1);
-                    end if;
-                when Logic_And =>
-                    if L /= 0 and R /= 0 then
-                        return Expr'(Kind => Literal, Val => 1);
-                    else
-                        return Expr'(Kind => Literal, Val => 0);
-                    end if; 
-                when Logic_Or => 
-                    if L /= 0 or R /= 0 then
-                        return Expr'(Kind => Literal, Val => 1);
-                    else
-                        return Expr'(Kind => Literal, Val => 0);
-                    end if; 
-            end case;
-            return Expr'(Kind => Literal, Val => 0);
-        end BinOp;
+    overriding function Eval (B : Bin_Op) return Integer is
+        L_evaluated: Integer := Eval(B.L.all);
+        R_evaluated: Integer := Eval(B.R.all);
+    begin
+        if B.Op = Div and R_evaluated = 0 then 
+            raise DivisionByZero;
+        end if;
+        return (case B.Op is
+        when Add => L_evaluated + R_evaluated,
+        when Sub => L_evaluated - R_evaluated,
+        when Mul => L_evaluated * R_evaluated,
+        when Div =>  L_evaluated / R_evaluated,
+        when Logic_And => (if (L_evaluated /= 0 And R_evaluated /= 0) then 1 else 0),
+        when Logic_Or => (if (L_evaluated /= 0 or R_evaluated /= 0) then 1 else 0),
+        when others => 0);
+    end Eval;
+
+    overriding function Eval (I : If_Expr) return Integer is
+    begin
+        return (if Eval(I.Cond.all) /= 0 then Eval(I.Then_Expr.all) else Eval(I.Else_Expr.all));
+    end Eval;
 end Expr_Eval;
 

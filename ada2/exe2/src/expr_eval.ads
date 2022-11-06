@@ -1,25 +1,33 @@
 package Expr_Eval is
 
-    type Expr;
+    DivisionByZero: exception;
 
-    type Expr_Kind is (Bin_Op, Literal, If_Expr);
+    type Expr is abstract tagged null record;
+
+    function Eval (E: Expr) return Integer is abstract;
+
     type Op_Kind is (Add, Sub, Mul, Div, Logic_And, Logic_Or);
-    type Expr_Access is access Expr;
-    type Ada.Containers.Indefinite_Holders(Integer) is access Expr;
+    type Expr_Access is access Expr'Class;
 
-
-    type Expr (Kind : Expr_Kind) is record
-      case Kind is
-         when Bin_Op =>
-            L, R : Holder(Integer);
-            Op   : Op_Kind;
-         when If_Expr =>
-            Cond, Then_Expr, Else_Expr : Expr_Access;
-         when Literal =>
-            Val : Integer;
-      end case;
+    type Bin_Op is new Expr with record
+        L, R: Expr_Access;
+        Op: Op_Kind;
     end record;
+    type Bin_Op_Access is access Bin_Op'Class;
 
-    function Eval(E: Expr) return Integer;
-    function BinOp(L: Integer; R: Integer; Op: Expr_Eval.Op_Kind) return Expr;
+    type If_Expr is new Expr with record
+        Cond, Then_Expr, Else_Expr: Expr_Access;
+    end record;
+    type If_Expr_Access is access If_Expr'Class;
+
+    type Literal is new Expr with record
+        val: Integer;
+    end record;
+    type Literal_Access is access Literal'Class;
+
+    overriding function Eval (L : Literal) return Integer;
+    overriding function Eval (B : Bin_Op) return Integer;
+    overriding function Eval (I : If_Expr) return Integer;
+
 end Expr_Eval;
+
