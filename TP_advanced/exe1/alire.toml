@@ -1,0 +1,9 @@
+name = "exo1"
+description = "Shiny new project"
+version = "0.1.0-dev"
+
+authors = ["Odric Roux-Paris"]
+maintainers = ["Odric Roux-Paris <odric.roux-paris@epita.fr>"]
+maintainers-logins = ["MrCirdo"]
+
+executables = ["exo1"]
